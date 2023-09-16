@@ -186,6 +186,7 @@ void virtio_disk_rw(struct buf *, int);
 void virtio_disk_intr(void);
 
 // sem.c
+void init_semaphore();
 int sem_open(int id_sem, int value);
 int sem_close(int id_sem);
 int sem_up(int id_sem);

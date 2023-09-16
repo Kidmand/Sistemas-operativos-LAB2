@@ -3,11 +3,14 @@
 
 #define SEM_ID 0
 
-void print_message(char *message)
+void print_message(char *message, int cant)
 {
-    sem_down(SEM_ID);
-    printf("%s\n", message);
-    sem_up(SEM_ID);
+    for (int i = 0; i < cant; i++)
+    {
+        sem_down(SEM_ID);
+        printf("%s", message);
+        sem_up(SEM_ID);
+    }
 }
 
 /**
@@ -38,9 +41,9 @@ int main(int argc, char *argv[])
     /*  Estaria bueno mejorar la implemntacion para que detecte
         si se pasa un parametro que no es un numero.               */
 
-    // int num = atoi(argv[1]); // Se convierte a entero el argumento.
+    int num = atoi(argv[1]); // Se convierte a entero el argumento.
 
-    int res_sem = sem_open(SEM_ID, 1);
+    int res_sem = sem_open(SEM_ID, 1); // SE ESTA GUARDANDO EN EL SEM "SEM_ID" SIEMPRE, ESTO NO PUEDE PASAR.
     if (res_sem != 0)
     {
         printf("ERROR: Fallo el sem_open.\n");
@@ -51,26 +54,34 @@ int main(int argc, char *argv[])
 
     pc_id_1 = fork();
 
-    if (pc_id_1 == 0) // Si el proceso de primer hijo
+    if (pc_id_1 < 0)
     {
-        print_message("ping\n");
-    }
-    else if (pc_id_1 < 0)
         printf("ERROR: Fallo el fork.\n");
-
-    pc_id_2 = fork();
-
-    if (pc_id_2 == 0 && pc_id_1 > 0) // Si el proceso del segundo hijo
+    }
+    else if (pc_id_1 == 0) // Si el proceso de primer hijo
     {
-        print_message("pong\n");
+        print_message("ping\n", num);
     }
-    else if (pc_id_2 < 0)
-        printf("ERROR: Fallo el fork.\n");
+    else
+    {
+        pc_id_2 = fork();
 
-    wait(&pc_id_1);
-    wait(&pc_id_2);
+        if (pc_id_2 < 0)
+        {
+            printf("ERROR: Fallo el fork.\n");
+        }
+        else if (pc_id_2 == 0 && pc_id_1 > 0) // Si el proceso del segundo hijo
+        {
+            print_message("    pong\n", num);
+        }
+        else
+        {
+            wait(&pc_id_1);
+            wait(&pc_id_2);
 
-    sem_close(SEM_ID);
+            sem_close(SEM_ID);
+        }
+    }
 
     exit(0);
 }
