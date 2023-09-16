@@ -30,7 +30,6 @@ void main()
     virtio_disk_init(); // emulated hard disk
     userinit();         // first user process
     __sync_synchronize();
-    init_semaphore();
     started = 1;
   }
   else
