@@ -44,6 +44,44 @@ int is_sem_open(int id_sem)
     return semaphore_table[id_sem].status == IS_OPEN;
 }
 
+/* Convierte un numero positivo a string*/
+char *intToString(int numero)
+{
+    char *cadena;
+    // Caso especial para el número 0
+    if (numero <= 0)
+    {
+        cadena = "0";
+        return cadena;
+    }
+
+    // Inicializa un índice
+    int indice = 0;
+
+    // Convierte los dígitos del número en caracteres y los almacena en el arreglo inversamente
+    while (numero > 0)
+    {
+        int digito = numero % 10;
+        cadena[indice++] = '0' + digito;
+        numero /= 10;
+    }
+
+    // Invierte la cadena para que quede en el orden correcto
+    int i, j;
+    char temp;
+    for (i = 0, j = indice - 1; i < j; i++, j--)
+    {
+        temp = cadena[i];
+        cadena[i] = cadena[j];
+        cadena[j] = temp;
+    }
+
+    // Agrega el carácter nulo al final para indicar el final de la cadena
+    cadena[indice] = '\0';
+
+    return cadena;
+}
+
 /* ------------- Funciones para el USER ---------------*/
 
 /* Inicializar un semáforo.
@@ -78,7 +116,8 @@ int sem_open(int id_sem, int value)
         return ERROR_CODE;
     }
 
-    initlock(&semaphore_table[id_sem].lock, "nombre_arbitrario(HAYQUECAMBIARLO)"); // <-- Cambiar el nombre del semaforo (debe ser distinto depende del semaforo).
+    // Se inicializa el lock y su nombre es el id del semaforo.
+    initlock(&semaphore_table[id_sem].lock, intToString(id_sem));
 
     semaphore_table[id_sem].status = IS_OPEN;
     semaphore_table[id_sem].value = value;
