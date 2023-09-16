@@ -13,7 +13,7 @@
 
 
 ## KERNEL-SPACE (ejemplo)
-1. Crear un archivo `func.c` en la carpeta **/kernel** e mplementa todas tus funciones (func1, func2, ...)
+1. Crear un archivo `func.c` en la carpeta **/kernel** e implementa todas tus funciones (func1, func2, ...)
 2. Agregar `$K/func.o \` a **MAKEFLE** en `OBJS` (linea 4)
 3. Agregar todas las **funciones implementadas en kernel/func.c** a `user/usys.pl`    
    ``` c 

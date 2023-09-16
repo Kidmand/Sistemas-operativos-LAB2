@@ -12,7 +12,7 @@ sys_exit(void)
   int n;
   argint(0, &n);
   exit(n);
-  return 0;  // not reached
+  return 0; // not reached
 }
 
 uint64
@@ -43,7 +43,7 @@ sys_sbrk(void)
 
   argint(0, &n);
   addr = myproc()->sz;
-  if(growproc(n) < 0)
+  if (growproc(n) < 0)
     return -1;
   return addr;
 }
@@ -57,8 +57,10 @@ sys_sleep(void)
   argint(0, &n);
   acquire(&tickslock);
   ticks0 = ticks;
-  while(ticks - ticks0 < n){
-    if(killed(myproc())){
+  while (ticks - ticks0 < n)
+  {
+    if (killed(myproc()))
+    {
       release(&tickslock);
       return -1;
     }
@@ -88,4 +90,35 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+// NUEVAS FUNCIONES DE SEMAFOROS AGREGADAS
+
+uint64 sys_sem_open(void)
+{
+  int arg_id_sem, arg_value;
+  argint(0, &arg_id_sem);
+  argint(1, &arg_value);
+  return sem_open(arg_id_sem, arg_value);
+}
+
+uint64 sys_sem_close(void)
+{
+  int arg_id_sem;
+  argint(0, &arg_id_sem);
+  return sem_close(arg_id_sem);
+}
+
+uint64 sys_sem_up(void)
+{
+  int arg_id_sem;
+  argint(0, &arg_id_sem);
+  return sem_up(arg_id_sem);
+}
+
+uint64 sys_sem_down(void)
+{
+  int arg_id_sem;
+  argint(0, &arg_id_sem);
+  return sem_down(arg_id_sem);
 }

@@ -18,7 +18,7 @@ initcode.out
 devcontainer.json
 usys.S
 
-kernel
+
 mkfs
 _cat
 _echo
