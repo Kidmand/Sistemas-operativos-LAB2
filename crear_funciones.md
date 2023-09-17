@@ -23,14 +23,14 @@
    ``` c 
       int func1(int);    
    ```
-5. Agregar todas las **funciones implementadas en kerner/func.c** a `kernel/syscall.h`   
-   ``` c  
-      #define SYS_func1  22 
-   ```       
-6. Agregar todas las **especificaciones de las funciones implementadas en kerner/func.c**  a `kernel/defs.h`
+5. Agregar todas las **especificaciones de las funciones implementadas en kerner/func.c**  a `kernel/defs.h`
     ``` c 
     int  func1(char*, char**); 
     ```
+6. Agregar todas las **funciones implementadas en kerner/func.c** a `kernel/syscall.h`   
+   ``` c  
+      #define SYS_func1  22 
+   ```       
 7. Agregar todas las **funciones implementadas en kerner/func.c** a `kernel/syscall.c` en estos dos lugares del codigo.   
    ``` c
       extern uint64 sys_func1(void);    //(linea 82) 
@@ -41,7 +41,7 @@
 8. Una vez agregado lo anterior al kernel, decidir donde implementar lo ulitmo, en **(sysfile.c)** o **(sysproc.c)** aca se define como se pasan los argumentos del modo usuario al modo kernel, porque se deben copiar. Ejemplo:
 
    ``` c
-   uint64 sys_sum(void)
+   uint64 sys_func1(void)
    {
       int a , b;     
      argint(0, &a);
@@ -94,14 +94,14 @@ Vamos a hacer un simple programa de consola que toma dos numeros y retorna la su
    ``` c
    int sum(int, int); // sum(): Suma dos numeros
    ```
-9. Agregar en `kernel/syscall.h`
-    ``` c
-    #define SYS_sum 22
-    ```
-10. Agregar en `kernel/defs.h`
+9. Agregar en `kernel/defs.h`
     ``` c
     //  sum.c
     int sum(int, int);
+    ```
+10. Agregar en `kernel/syscall.h`
+    ``` c
+    #define SYS_sum 22
     ```
 11. Agregar en `kernel/syscall.h`
     ``` c
