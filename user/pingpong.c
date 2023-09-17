@@ -28,8 +28,7 @@ int create_sem(int value)
     return SEM_ID;
 }
 
-/**
- * PingPong
+/* PingPong
  *
  * Este programa toma un argumento entero N (rally) que determina la cantidad de veces que se imprimirán las
  * palabras "ping" y "pong" por pantalla. El programa crea dos procesos hijos que se alternan para imprimir
@@ -77,7 +76,7 @@ int main(int argc, char *argv[])
     {
         printf("ERROR: Fallo el fork.\n");
     }
-    else if (pc_id_1 == 0) // Si el proceso de primer hijo
+    else if (pc_id_1 == 0) // Si es el primer hijo
     {
         // La primera vez (i = 0) ejecuta PING porque se inicializo en 1 el semaforo.
         for (int i = 0; i < num; i++)
@@ -95,7 +94,7 @@ int main(int argc, char *argv[])
         {
             printf("ERROR: Fallo el fork.\n");
         }
-        else if (pc_id_2 == 0 && pc_id_1 > 0) // Si el proceso del segundo hijo
+        else if (pc_id_2 == 0 && pc_id_1 > 0) // Si es el segundo hijo
         {
             // La primera vez (i = 0) se esta esperando que PING active el PONG porque el semaforo empezo en 0.
             for (int i = 0; i < num; i++)
