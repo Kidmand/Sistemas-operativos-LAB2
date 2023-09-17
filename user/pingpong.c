@@ -1,9 +1,7 @@
 #include "kernel/types.h"
 #include "user/user.h"
 
-#define SEM_ID 0
-
-void print_message(char *message, int cant)
+void print_message(char *message, int cant, int SEM_ID)
 {
     for (int i = 0; i < cant; i++)
     {
@@ -42,15 +40,27 @@ int main(int argc, char *argv[])
         si se pasa un parametro que no es un numero.               */
 
     int num = atoi(argv[1]); // Se convierte a entero el argumento.
+    int SEM_ID = 0;
 
-    int res_sem = sem_open(SEM_ID, 1); // SE ESTA GUARDANDO EN EL SEM "SEM_ID" SIEMPRE, ESTO NO PUEDE PASAR.
-    if (res_sem != 0)
+    // Bucle para encontrar un semaforo abierto
+    int res_sem = sem_open(SEM_ID, 1);
+
+    /* Si el semaforo da error o no esta abierto, prueba con el siguiente */
+    while (res_sem == -1 || res_sem == 1)
     {
-        printf("ERROR: Fallo el sem_open.\n");
-        return (-1);
+        SEM_ID++;
+        res_sem = sem_open(SEM_ID, 1);
     }
 
-    int pc_id_1, pc_id_2;
+    //En caso de error terminamos el programa
+    if (res_sem == -1)
+    {
+        printf("ERROR: No se pudo abrir el semaforo.\n");
+        exit(1);
+    }
+
+    int pc_id_1,
+        pc_id_2;
 
     pc_id_1 = fork();
 
@@ -60,7 +70,7 @@ int main(int argc, char *argv[])
     }
     else if (pc_id_1 == 0) // Si el proceso de primer hijo
     {
-        print_message("ping\n", num);
+        print_message("ping\n", num, SEM_ID);
     }
     else
     {
@@ -72,7 +82,7 @@ int main(int argc, char *argv[])
         }
         else if (pc_id_2 == 0 && pc_id_1 > 0) // Si el proceso del segundo hijo
         {
-            print_message("    pong\n", num);
+            print_message("    pong\n", num, SEM_ID);
         }
         else
         {

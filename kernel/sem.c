@@ -89,14 +89,15 @@ char *intToString(int numero)
  * PRECON:
  *   - 0 <= id_sem <= MAX_SEMAPHORES.
  *   - value  >= 0.
- *   - El id del semáforo NO debe estar en uso.
  *
  * PARAMS:
  *   - id_sem: El id del semaforo a crear.
  *   - value:  El valor inicial del semáforo.
  *
  * RETURN:
- *   - `0` en caso de éxito, otro valor en caso de error.
+ *   - `0` en caso de éxito.
+ *   - `1` en caso de que el semaforo este en uso.
+ *   - `-1` en caso de error.
  */
 int sem_open(int id_sem, int value)
 {
@@ -110,11 +111,9 @@ int sem_open(int id_sem, int value)
         printf("KERNEL-ERROR: Valor fuera de rango.\n");
         return ERROR_CODE;
     }
-    if (is_sem_open(id_sem))
-    {
-        printf("KERNEL-ERROR: El semaforo ya esta inicialzado.\n");
-        return ERROR_CODE;
-    }
+
+    if (is_sem_open(id_sem)) // El caso de que el semaforo este en uso.
+        return 1;
 
     // Se inicializa el lock y su nombre es el id del semaforo.
     initlock(&semaphore_table[id_sem].lock, intToString(id_sem));
@@ -175,7 +174,7 @@ int sem_up(int id_sem)
     }
     if (!is_sem_open(id_sem))
     {
-        printf("KERNEL-ERROR: El semaforo no esta inicializado. (up)\n");
+        printf("KERNEL-ERROR: El semaforo (%d) no esta inicializado. (up)\n", id_sem);
         return ERROR_CODE;
     }
 
@@ -209,7 +208,7 @@ int sem_down(int id_sem)
     }
     if (!is_sem_open(id_sem))
     {
-        printf("KERNEL-ERROR: El semaforo no esta inicializado. (down)\n");
+        printf("KERNEL-ERROR: El semaforo (%d) no esta inicializado. (down)\n", id_sem);
         return ERROR_CODE;
     }
 
