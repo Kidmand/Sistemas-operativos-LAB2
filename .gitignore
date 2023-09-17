@@ -18,6 +18,8 @@ initcode.out
 devcontainer.json
 usys.S
 
+/kernel/kernel
+
 mkfs
 _cat
 _echo
@@ -35,3 +37,4 @@ _usertests
 _grind 
 _wc 
 _zombie 
+_pingpong
