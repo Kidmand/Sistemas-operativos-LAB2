@@ -18,6 +18,7 @@ initcode.out
 devcontainer.json
 usys.S
 
+/kernel/kernel
 
 mkfs
 _cat
@@ -36,3 +37,8 @@ _usertests
 _grind 
 _wc 
 _zombie 
+_pingpong
+
+.gdbinit
+xv6.out
+__pycache__
