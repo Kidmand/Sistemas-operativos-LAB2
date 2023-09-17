@@ -38,3 +38,5 @@ _grind
 _wc 
 _zombie 
 _pingpong
+
+.gdbinit
