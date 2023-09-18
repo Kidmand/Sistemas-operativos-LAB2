@@ -78,12 +78,13 @@ int main(int argc, char *argv[])
     }
     else if (pc_id_1 == 0) // Si es el primer hijo
     {
+        int status_pong = 0, status_ping = 0;
         // La primera vez (i = 0) ejecuta PING porque se inicializo en 1 el semaforo.
-        for (int i = 0; i < num; i++)
+        for (int i = 0; (i < num) && status_pong == 0 && status_ping == 0; i++)
         {
-            sem_down(SEM_PING); // Espero que PONG me active
+            status_ping = sem_down(SEM_PING); // Espero que PONG me active
             printf("ping\n");
-            sem_up(SEM_PONG); // Le aviso a PONG que ya puede escribir
+            status_pong = sem_up(SEM_PONG); // Le aviso a PONG que ya puede escribir
         }
     }
     else
@@ -96,12 +97,13 @@ int main(int argc, char *argv[])
         }
         else if (pc_id_2 == 0 && pc_id_1 > 0) // Si es el segundo hijo
         {
+            int status_pong = 0, status_ping = 0;
             // La primera vez (i = 0) se esta esperando que PING active el PONG porque el semaforo empezo en 0.
-            for (int i = 0; i < num; i++)
+            for (int i = 0; (i < num) && status_pong == 0 && status_ping == 0; i++)
             {
-                sem_down(SEM_PONG); // Espero que PING me active
+                status_pong = sem_down(SEM_PONG); // Espero que PING me active
                 printf("    pong\n");
-                sem_up(SEM_PING); // Le aviso a PING que ya puede escribir
+                status_ping = sem_up(SEM_PING); // Le aviso a PING que ya puede escribir
             }
         }
         else
