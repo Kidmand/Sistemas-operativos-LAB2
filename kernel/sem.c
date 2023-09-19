@@ -21,9 +21,9 @@
 
 struct semaphore
 {
-    struct spinlock lock; // Lock del semaforo.
-    int value;            // Valor del semaforo (0 , 1 ,2 , ...).
-    int status;           // Valor para indicar si el semaforo está en uso (IS_OPEN o NOT_OPEN).
+  struct spinlock lock; // Lock del semaforo.
+  int value;            // Valor del semaforo (0 , 1 ,2 , ...).
+  int status;           // Valor para indicar si el semaforo está en uso (IS_OPEN o NOT_OPEN).
 };
 
 struct semaphore semaphore_table[MAX_SEMAPHORES];
@@ -41,45 +41,45 @@ struct semaphore semaphore_table[MAX_SEMAPHORES];
  */
 int is_sem_open(int id_sem)
 {
-    return semaphore_table[id_sem].status == IS_OPEN;
+  return semaphore_table[id_sem].status == IS_OPEN;
 }
 
 /* Convierte un numero positivo a string*/
 char *intToString(int numero)
 {
-    char *cadena;
-    // Caso especial para el número 0
-    if (numero <= 0)
-    {
-        cadena = "0";
-        return cadena;
-    }
-
-    // Inicializa un índice
-    int indice = 0;
-
-    // Convierte los dígitos del número en caracteres y los almacena en el arreglo inversamente
-    while (numero > 0)
-    {
-        int digito = numero % 10;
-        cadena[indice++] = '0' + digito;
-        numero /= 10;
-    }
-
-    // Invierte la cadena para que quede en el orden correcto
-    int i, j;
-    char temp;
-    for (i = 0, j = indice - 1; i < j; i++, j--)
-    {
-        temp = cadena[i];
-        cadena[i] = cadena[j];
-        cadena[j] = temp;
-    }
-
-    // Agrega el carácter nulo al final para indicar el final de la cadena
-    cadena[indice] = '\0';
-
+  char *cadena;
+  // Caso especial para el número 0
+  if (numero <= 0)
+  {
+    cadena = "0";
     return cadena;
+  }
+
+  // Inicializa un índice
+  int indice = 0;
+
+  // Convierte los dígitos del número en caracteres y los almacena en el arreglo inversamente
+  while (numero > 0)
+  {
+    int digito = numero % 10;
+    cadena[indice++] = '0' + digito;
+    numero /= 10;
+  }
+
+  // Invierte la cadena para que quede en el orden correcto
+  int i, j;
+  char temp;
+  for (i = 0, j = indice - 1; i < j; i++, j--)
+  {
+    temp = cadena[i];
+    cadena[i] = cadena[j];
+    cadena[j] = temp;
+  }
+
+  // Agrega el carácter nulo al final para indicar el final de la cadena
+  cadena[indice] = '\0';
+
+  return cadena;
 }
 
 /* ------------- Funciones para el USER ---------------*/
@@ -95,33 +95,33 @@ char *intToString(int numero)
  *   - value:  El valor inicial del semáforo.
  *
  * RETURN:
- *   - `0` en caso de éxito.
+ *   - `0` en caso de éxito (se inicializo un nuevo semaforo).
  *   - `1` en caso de que el semaforo este en uso.
  *   - `-1` en caso de error.
  */
 int sem_open(int id_sem, int value)
 {
-    if (id_sem < 0 || id_sem >= MAX_SEMAPHORES)
-    {
-        printf("KERNEL-ERROR: Id fuera de rango.\n");
-        return ERROR_CODE;
-    }
-    if (value < 0)
-    {
-        printf("KERNEL-ERROR: Valor fuera de rango.\n");
-        return ERROR_CODE;
-    }
+  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES)
+  {
+    printf("KERNEL-ERROR: Id fuera de rango.\n");
+    return ERROR_CODE;
+  }
+  if (value < 0)
+  {
+    printf("KERNEL-ERROR: Valor fuera de rango.\n");
+    return ERROR_CODE;
+  }
 
-    if (is_sem_open(id_sem)) // El caso de que el semaforo este en uso.
-        return 1;
+  if (is_sem_open(id_sem)) // El caso de que el semaforo este en uso.
+    return 1;
 
-    // Se inicializa el lock y su nombre es el id del semaforo.
-    initlock(&semaphore_table[id_sem].lock, intToString(id_sem));
+  // Se inicializa el lock y su nombre es el id del semaforo.
+  initlock(&semaphore_table[id_sem].lock, intToString(id_sem));
 
-    semaphore_table[id_sem].status = IS_OPEN;
-    semaphore_table[id_sem].value = value;
+  semaphore_table[id_sem].status = IS_OPEN;
+  semaphore_table[id_sem].value = value;
 
-    return SUCCESS_CODE;
+  return SUCCESS_CODE;
 }
 
 /* Cerrar un semáforo.
@@ -141,15 +141,15 @@ int sem_open(int id_sem, int value)
  */
 int sem_close(int id_sem)
 {
-    if (id_sem < 0 || id_sem >= MAX_SEMAPHORES)
-    {
-        printf("KERNEL-ERROR: Id fuera de rango.\n");
-        return ERROR_CODE;
-    }
+  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES)
+  {
+    printf("KERNEL-ERROR: Id fuera de rango.\n");
+    return ERROR_CODE;
+  }
 
-    semaphore_table[id_sem].status = NOT_OPEN;
+  semaphore_table[id_sem].status = NOT_OPEN;
 
-    return SUCCESS_CODE;
+  return SUCCESS_CODE;
 }
 
 /* Incrementa el semáforo `sem`.
@@ -167,23 +167,23 @@ int sem_close(int id_sem)
  */
 int sem_up(int id_sem)
 {
-    if (id_sem < 0 || id_sem >= MAX_SEMAPHORES)
-    {
-        printf("KERNEL-ERROR: Id fuera de rango.\n");
-        return ERROR_CODE;
-    }
-    if (!is_sem_open(id_sem))
-    {
-        printf("KERNEL-ERROR: El semaforo (%d) no esta inicializado. (up)\n", id_sem);
-        return ERROR_CODE;
-    }
+  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES)
+  {
+    printf("KERNEL-ERROR: Id fuera de rango.\n");
+    return ERROR_CODE;
+  }
+  if (!is_sem_open(id_sem))
+  {
+    printf("KERNEL-ERROR: El semaforo (%d) no esta inicializado. (up)\n", id_sem);
+    return ERROR_CODE;
+  }
 
-    acquire(&semaphore_table[id_sem].lock);
-    semaphore_table[id_sem].value += 1;
-    wakeup(&semaphore_table[id_sem]);
-    release(&semaphore_table[id_sem].lock);
+  acquire(&semaphore_table[id_sem].lock);
+  semaphore_table[id_sem].value += 1;
+  wakeup(&semaphore_table[id_sem]);
+  release(&semaphore_table[id_sem].lock);
 
-    return SUCCESS_CODE;
+  return SUCCESS_CODE;
 }
 
 /* Decrementa el semáforo `sem`
@@ -201,24 +201,24 @@ int sem_up(int id_sem)
  */
 int sem_down(int id_sem)
 {
-    if (id_sem < 0 || id_sem >= MAX_SEMAPHORES)
-    {
-        printf("KERNEL-ERROR: Id fuera de rango.\n");
-        return ERROR_CODE;
-    }
-    if (!is_sem_open(id_sem))
-    {
-        printf("KERNEL-ERROR: El semaforo (%d) no esta inicializado. (down)\n", id_sem);
-        return ERROR_CODE;
-    }
+  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES)
+  {
+    printf("KERNEL-ERROR: Id fuera de rango.\n");
+    return ERROR_CODE;
+  }
+  if (!is_sem_open(id_sem))
+  {
+    printf("KERNEL-ERROR: El semaforo (%d) no esta inicializado. (down)\n", id_sem);
+    return ERROR_CODE;
+  }
 
-    acquire(&semaphore_table[id_sem].lock);
-    while (semaphore_table[id_sem].value == 0)
-        sleep(&semaphore_table[id_sem], &semaphore_table[id_sem].lock);
-    semaphore_table[id_sem].value -= 1;
-    release(&semaphore_table[id_sem].lock);
+  acquire(&semaphore_table[id_sem].lock);
+  while (semaphore_table[id_sem].value == 0)
+    sleep(&semaphore_table[id_sem], &semaphore_table[id_sem].lock);
+  semaphore_table[id_sem].value -= 1;
+  release(&semaphore_table[id_sem].lock);
 
-    return SUCCESS_CODE;
+  return SUCCESS_CODE;
 }
 
 /* ------------- Funciones para el KERNEL ---------------*/
@@ -226,6 +226,6 @@ int sem_down(int id_sem)
 /* Inicializa los semáforos.*/
 void init_semaphore()
 {
-    for (int id = 0; id < MAX_SEMAPHORES; id++)
-        semaphore_table[id].status = NOT_OPEN; // Indica que el semáforo está en uso
+  for (int id = 0; id < MAX_SEMAPHORES; id++)
+    semaphore_table[id].status = NOT_OPEN; // Indica que el semáforo está en uso
 }
