@@ -78,7 +78,8 @@ int main(int argc, char *argv[])
     }
     else if (pc_id_1 == 0) // Si es el primer hijo
     {
-        int status_pong = 0, status_ping = 0;
+        int status_pong = 0, status_ping = 0; // Variables para controlar los errores de los semaforos.
+
         // La primera vez (i = 0) ejecuta PING porque se inicializo en 1 el semaforo.
         for (int i = 0; (i < num) && status_pong == 0 && status_ping == 0; i++)
         {
@@ -97,7 +98,8 @@ int main(int argc, char *argv[])
         }
         else if (pc_id_2 == 0 && pc_id_1 > 0) // Si es el segundo hijo
         {
-            int status_pong = 0, status_ping = 0;
+            int status_pong = 0, status_ping = 0; // Variables para controlar los errores de los semaforos.
+
             // La primera vez (i = 0) se esta esperando que PING active el PONG porque el semaforo empezo en 0.
             for (int i = 0; (i < num) && status_pong == 0 && status_ping == 0; i++)
             {
@@ -111,6 +113,7 @@ int main(int argc, char *argv[])
             wait(&pc_id_1);
             wait(&pc_id_2);
 
+            // Liberamos los semaforos.
             sem_close(SEM_PING);
             sem_close(SEM_PONG);
         }
