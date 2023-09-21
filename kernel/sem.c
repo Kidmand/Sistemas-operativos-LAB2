@@ -17,8 +17,6 @@
 #define IS_OPEN 0
 #define NOT_OPEN 1
 
-#define NULL 0
-
 struct semaphore
 {
   struct spinlock lock; // Lock del semaforo.
@@ -38,13 +36,19 @@ struct semaphore semaphore_table[MAX_SEMAPHORES];
  * RETURN:
  *   - `1` si el semáforo está en uso.
  *   - `0` si el semáforo NO está en uso.
+ *   - `-1` en caso de error.
  */
 int is_sem_open(int id_sem)
 {
+  /* Manejo de errores */
+  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES) // Id fuera de rango.
+  {
+    return ERROR_CODE;
+  }
   return semaphore_table[id_sem].status == IS_OPEN;
 }
 
-/* Convierte un numero positivo a string*/
+/* Convierte un numero positivo a string (NO ES NECESARIO ENTENDR COMO FUNCIONA)*/
 char *intToString(int numero)
 {
   char *cadena;
@@ -101,23 +105,26 @@ char *intToString(int numero)
  */
 int sem_open(int id_sem, int value)
 {
-  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES)
+  /* Manejo de errores */
+  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES) // Id fuera de rango.
   {
-    printf("KERNEL-ERROR: Id fuera de rango.\n");
     return ERROR_CODE;
   }
-  if (value < 0)
+  if (value < 0) // Valor fuera de rango.
   {
-    printf("KERNEL-ERROR: Valor fuera de rango.\n");
     return ERROR_CODE;
   }
 
+  /* Manejo de estados */
   if (is_sem_open(id_sem)) // El caso de que el semaforo este en uso.
+  {
     return 1;
+  }
 
-  // Se inicializa el lock y su nombre es el id del semaforo.
-  initlock(&semaphore_table[id_sem].lock, intToString(id_sem));
+  /* Se inicializa el semaforo */
+  initlock(&semaphore_table[id_sem].lock, intToString(id_sem)); // Se inicializa el lock y su nombre es el id del semaforo.
 
+  // Se establecen las variables necesarias
   semaphore_table[id_sem].status = IS_OPEN;
   semaphore_table[id_sem].value = value;
 
@@ -141,9 +148,9 @@ int sem_open(int id_sem, int value)
  */
 int sem_close(int id_sem)
 {
-  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES)
+  /* Manejo de errores */
+  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES) // Id fuera de rango.
   {
-    printf("KERNEL-ERROR: Id fuera de rango.\n");
     return ERROR_CODE;
   }
 
@@ -167,14 +174,13 @@ int sem_close(int id_sem)
  */
 int sem_up(int id_sem)
 {
-  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES)
+  /* Manejo de errores */
+  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES) // Id fuera de rango.
   {
-    printf("KERNEL-ERROR: Id fuera de rango.\n");
     return ERROR_CODE;
   }
-  if (!is_sem_open(id_sem))
+  if (!is_sem_open(id_sem)) //  El semaforo no esta inicializado.
   {
-    printf("KERNEL-ERROR: El semaforo (%d) no esta inicializado. (up)\n", id_sem);
     return ERROR_CODE;
   }
 
@@ -201,31 +207,38 @@ int sem_up(int id_sem)
  */
 int sem_down(int id_sem)
 {
-  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES)
+  /* Manejo de errores */
+  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES) //  Id fuera de rango.
   {
-    printf("KERNEL-ERROR: Id fuera de rango.\n");
     return ERROR_CODE;
   }
-  if (!is_sem_open(id_sem))
+  if (!is_sem_open(id_sem)) // El semaforo no esta inicializado.
   {
-    printf("KERNEL-ERROR: El semaforo (%d) no esta inicializado. (down)\n", id_sem);
     return ERROR_CODE;
   }
 
   acquire(&semaphore_table[id_sem].lock);
   while (semaphore_table[id_sem].value == 0)
+  {
     sleep(&semaphore_table[id_sem], &semaphore_table[id_sem].lock);
+  }
   semaphore_table[id_sem].value -= 1;
   release(&semaphore_table[id_sem].lock);
 
   return SUCCESS_CODE;
 }
 
-/* ------------- Funciones para el KERNEL ---------------*/
+/* ------------- Funciones solo para el KERNEL ---------------*/
 
-/* Inicializa los semáforos.*/
+/* Inicializa los semáforos (KERNEL).
+ *
+ * ¿Como funciona ?
+ * Establece todos los semaforos en `NOT_OPEN`.
+ */
 void init_semaphore()
 {
-  for (int id = 0; id < MAX_SEMAPHORES; id++)
-    semaphore_table[id].status = NOT_OPEN; // Indica que el semáforo está en uso
+  for (int id = 0; id < MAX_SEMAPHORES; id++) // Se recorren todo los semaforos
+  {
+    semaphore_table[id].status = NOT_OPEN; // Establece que el semáforo está en uso
+  }
 }
