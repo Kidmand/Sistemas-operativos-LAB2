@@ -41,10 +41,9 @@ struct semaphore semaphore_table[MAX_SEMAPHORES];
 int is_sem_open(int id_sem)
 {
   /* Manejo de errores */
-  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES) // Id fuera de rango.
-  {
-    return ERROR_CODE;
-  }
+  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES)
+    return ERROR_CODE; // Id fuera de rango.
+
   return semaphore_table[id_sem].status == IS_OPEN;
 }
 
@@ -106,24 +105,15 @@ char *intToString(int numero)
 int sem_open(int id_sem, int value)
 {
   /* Manejo de errores */
-  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES) // Id fuera de rango.
-  {
-    return ERROR_CODE;
-  }
-  if (value < 0) // Valor fuera de rango.
-  {
-    return ERROR_CODE;
-  }
+  if ((id_sem < 0 || id_sem >= MAX_SEMAPHORES) || value < 0)
+    return ERROR_CODE; // Id fuera de rango -o- Valor fuera de rango
 
   /* Manejo de estados */
   if (is_sem_open(id_sem)) // El caso de que el semaforo este en uso.
-  {
     return 1;
-  }
 
   /* Se inicializa el semaforo */
   initlock(&semaphore_table[id_sem].lock, intToString(id_sem)); // Se inicializa el lock y su nombre es el id del semaforo.
-
   // Se establecen las variables necesarias
   semaphore_table[id_sem].status = IS_OPEN;
   semaphore_table[id_sem].value = value;
@@ -149,10 +139,8 @@ int sem_open(int id_sem, int value)
 int sem_close(int id_sem)
 {
   /* Manejo de errores */
-  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES) // Id fuera de rango.
-  {
-    return ERROR_CODE;
-  }
+  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES)
+    return ERROR_CODE; // Id fuera de rango.
 
   semaphore_table[id_sem].status = NOT_OPEN;
 
@@ -175,19 +163,15 @@ int sem_close(int id_sem)
 int sem_up(int id_sem)
 {
   /* Manejo de errores */
-  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES) // Id fuera de rango.
-  {
-    return ERROR_CODE;
-  }
-  if (!is_sem_open(id_sem)) //  El semaforo no esta inicializado.
-  {
-    return ERROR_CODE;
-  }
+  if ((id_sem < 0 || id_sem >= MAX_SEMAPHORES) || !is_sem_open(id_sem))
+    return ERROR_CODE; // Id fuera de rango -o- El semaforo no esta inicializado
 
-  acquire(&semaphore_table[id_sem].lock);
+  acquire(&semaphore_table[id_sem].lock); // Se "prende" el lock.
+  // --------SECCIÓN CRÍTICA --------
   semaphore_table[id_sem].value += 1;
-  wakeup(&semaphore_table[id_sem]);
-  release(&semaphore_table[id_sem].lock);
+  // --------------------------------
+  wakeup(&semaphore_table[id_sem]);       // Se "despierta" el procesos que estaba durmiendo.
+  release(&semaphore_table[id_sem].lock); // Se "apaga" el lock.
 
   return SUCCESS_CODE;
 }
@@ -208,22 +192,16 @@ int sem_up(int id_sem)
 int sem_down(int id_sem)
 {
   /* Manejo de errores */
-  if (id_sem < 0 || id_sem >= MAX_SEMAPHORES) //  Id fuera de rango.
-  {
-    return ERROR_CODE;
-  }
-  if (!is_sem_open(id_sem)) // El semaforo no esta inicializado.
-  {
-    return ERROR_CODE;
-  }
+  if ((id_sem < 0 || id_sem >= MAX_SEMAPHORES) || !is_sem_open(id_sem))
+    return ERROR_CODE; // Id fuera de rango -o- El semaforo no esta inicializado
 
-  acquire(&semaphore_table[id_sem].lock);
-  while (semaphore_table[id_sem].value == 0)
-  {
+  acquire(&semaphore_table[id_sem].lock);    // Se "prende" el lock.
+  while (semaphore_table[id_sem].value == 0) // Se "dureme" el procesos simepre que el `valor` sea 0.
     sleep(&semaphore_table[id_sem], &semaphore_table[id_sem].lock);
-  }
+  // --------SECCIÓN CRÍTICA --------
   semaphore_table[id_sem].value -= 1;
-  release(&semaphore_table[id_sem].lock);
+  // --------------------------------
+  release(&semaphore_table[id_sem].lock); // Se "apaga" el lock.
 
   return SUCCESS_CODE;
 }
@@ -238,7 +216,5 @@ int sem_down(int id_sem)
 void init_semaphore()
 {
   for (int id = 0; id < MAX_SEMAPHORES; id++) // Se recorren todo los semaforos
-  {
-    semaphore_table[id].status = NOT_OPEN; // Establece que el semáforo está en uso
-  }
+    semaphore_table[id].status = NOT_OPEN;    // Establece que el semáforo está en uso
 }
