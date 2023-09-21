@@ -124,3 +124,5 @@ Vamos a hacer un simple programa de consola que toma dos numeros y retorna la su
     }
     ```
 13. **Listo toda la terminamos la implementacion**. Ahora ejecuta `make qemu` y na vez tengas la terminal andando proba ejecutar `suma 1 2` esto deberia retornar `1 + 2 = 3`. 
+
+Autor: Ramiro Lugo Viola (FaMAF)
