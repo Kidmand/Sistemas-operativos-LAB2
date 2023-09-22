@@ -28,18 +28,15 @@
       #define SYS_func1  22 
    ```       
 6. Agregar todas las **especificaciones de las funciones implementadas en kerner/func.c**  a `kernel/defs.h`
-    ``` c 
+   ``` c 
     int  func1(char*, char**); 
     ```
 7. Agregar todas las **funciones implementadas en kerner/func.c** a `kernel/syscall.c` en estos dos lugares del codigo.   
    ``` c
       extern uint64 sys_func1(void);    //(linea 82) 
-      ```
-   ``` c
       [SYS_func1]   sys_func1,          //(linea 107)
-      ```
+   ```
 8. Una vez agregado lo anterior al kernel, decidir donde implementar lo ulitmo, en **(sysfile.c)** o **(sysproc.c)** aca se define como se pasan los argumentos del modo usuario al modo kernel, porque se deben copiar. Ejemplo:
-
    ``` c
    uint64 sys_sum(void)
    {
@@ -123,4 +120,4 @@ Vamos a hacer un simple programa de consola que toma dos numeros y retorna la su
     return sum(a, b); // Llama a tu función sum implementada en sum.c
     }
     ```
-13. **Listo toda la terminamos la implementacion**. Ahora ejecuta `make qemu` y na vez tengas la terminal andando proba ejecutar `suma 1 2` esto deberia retornar `1 + 2 = 3`. 
+13. **Listo terminamos toda la implementacion**. Ahora ejecuta `make qemu` y una vez tengas la terminal andando proba ejecutar `suma 1 2` esto deberia retornar `1 + 2 = 3`. 
